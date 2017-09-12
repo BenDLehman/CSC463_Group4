@@ -1,0 +1,115 @@
+#define DIFFER 10
+#define TIME 0.5
+#define SENSOR analog(2)
+
+float loop = 999.0;
+
+int baseSensor = 0;
+int checkCount = 0;
+
+int main()
+{
+    
+   
+        baseSensor = SENSOR;
+        
+    while(1)
+      {        
+        printf("%d-%d",baseSensor, SENSOR);
+        printf("\n");
+        if(baseSensor - SENSOR >= DIFFER)
+          {
+            if(checkCount == 2)
+              {
+                checkCount =0;
+              goBackward(1.0);
+            }
+
+            if(checkLeft(baseSensor) == 0)
+              {
+                turnRight(2.0);
+                checkRight(baseSensor);
+            }
+            checkCount += 1;
+        }
+        else
+          {
+            checkCount--;
+            goForward(1.0);
+        }
+        
+    }
+
+}
+
+int turnTime = 0;
+int checkLeft(int base)
+{
+     while((turnTime != 4)&&(base - SENSOR >= DIFFER))
+      {
+        turnLeft(TIME);
+        turnTime += 1;
+        
+    }
+    
+    if(turnTime == 4)
+      {
+        turnTime = 0;
+        return 0;
+    }
+    turnTime = 0;
+    return 1;
+
+}
+
+int checkRight(int base)
+{
+       while((turnTime != 4)&&(base - SENSOR >= DIFFER))
+      {
+        turnRight(TIME);
+        turnTime += 1;
+        
+    }
+    
+    if(turnTime == 4)
+      {
+        turnTime = 0;
+        return 0;
+    }
+    turnTime = 0;
+    return 1;
+
+}
+float goForward(float t)
+{
+    motor(0,25);
+    motor(1,25);
+    sleep(t);
+    ao();
+}
+float goBackward(float t)
+{
+    motor(0,-30);
+    motor(1,-30);
+    sleep(t);
+    ao();
+}
+
+float turnLeft(float t)
+{
+    motor(1,30);
+    motor(0,-35);
+    sleep(t);
+    ao();
+    return t;
+}
+
+float turnRight(float t)
+{
+    motor(0,30);
+    motor(1,-35);
+    sleep(t);
+    ao();
+    return t;
+}
+
