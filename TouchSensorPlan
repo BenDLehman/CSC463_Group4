@@ -1,0 +1,18 @@
+touch sensor on front and a side. 
+use a bumper
+
+main()
+{
+  while(1)
+  {
+    findWall()
+    turn left 90 degrees
+    }
+}    
+  
+  
+  
+findWall()
+{
+  go forward until you hit a wall with the front bumper.
+}
