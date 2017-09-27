@@ -1,0 +1,81 @@
+
+#define TIME 0.5
+#define LEFT analog(2)+(analog(2)-analog(3))
+#define RIGHT analog(3)+(analog(3)-analog(2))
+#define READ printf("%d---%d---%d\n",analog(2),analog(4),analog(3));
+
+int rightPower = 30;
+int leftPower = 30;
+int power = 0;
+int offpower = 0;
+
+int main()
+{        
+    while(1)
+      {
+        READ
+          if(LEFT>analog(4))
+          fuzzyPower(0,1,LEFT-analog(2));
+          else if(RIGHT>analog(4))
+          fuzzyPower(1,0,RIGHT-analog(3));
+          else goForward(TIME);
+      }
+}
+
+//direction=1, change leftPower.
+//direction=0, change rightPower.
+//offmotor is the opposite of direction
+//difference = how much we are changing the power
+void fuzzyPower(int direction,int offmotor, int difference)
+{
+    resetPower();
+    power = difference%2;
+    offpower = difference*-2;
+    
+    //change powers in here
+    
+    if(direction==1)
+      turnRight(TIME);
+    else
+      turnLeft(TIME);
+}
+
+void resetPower()
+{
+    rightPower = 30;
+    leftPower = 30;
+}
+
+float goForward(float t)
+{
+    motor(0,35);
+    motor(1,35);
+    sleep(t);
+    ao();
+}
+float goBackward(float t)
+{
+    motor(0,-30);
+    motor(1,-30);
+    sleep(t);
+    ao();
+}
+
+float turnLeft(float t)
+{
+    motor(1,leftPower);
+    motor(0,rightPower);
+    sleep(t);
+    ao();
+    return t;
+}
+
+float turnRight(float t)
+{
+    motor(0,rightPower);
+    motor(1,leftPower);
+    sleep(t);
+    ao();
+    return t;
+}
+
