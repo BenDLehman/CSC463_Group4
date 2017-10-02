@@ -1,0 +1,107 @@
+#define TIME 0.5
+#define LPOWER 25
+#define HPOWER 35
+
+
+int difference = 0;
+int power = 0;
+void main()
+{        
+    while(1)
+      {
+        difference = analog(3)- analog(2);
+        printf("%d\n",difference);
+        power = fuzzyPower(difference);
+        switch(power)
+          {
+            case 0:
+              goForward(TIME);
+              break;
+            case 1:
+              turnRight(TIME, LPOWER);
+              break;
+            case -1:
+              turnLeft(TIME, LPOWER);
+            break;
+            case 2:
+              turnRight(TIME, HPOWER);
+            break;
+            case -2:
+              turnLeft(TIME, HPOWER);
+            break;
+            default:
+              goBackward(TIME);
+            break;
+        }
+    }   
+          
+}
+
+//direction=1, change leftPower.
+//direction=0, change rightPower.
+//offmotor is the opposite of direction
+//difference = how much we are changing the power
+int fuzzyPower(int difference)
+{
+    if(difference <0)
+      {
+        if((difference < -20) && (difference >= -50))
+          {
+            return -1;
+        }
+        if((difference < -50))
+          {
+            return -2;
+          }
+    }
+    else if(difference >0)
+      {
+        if((difference > 20) && (difference <= 50))
+          {
+            return 1;
+        }
+        if((difference > 50))
+          {
+            return 2;
+          }
+
+    }
+    else 
+    {
+        return 0;
+    }
+}
+
+
+float goForward(float t)
+{
+    motor(0,20);
+    motor(1,20);
+    sleep(t);
+    ao();
+}
+float goBackward(float t)
+{
+    motor(0,-30);
+    motor(1,-30);
+    sleep(t);
+    ao();
+}
+
+float turnLeft(float t, int power)
+{
+    motor(1,-20);
+    motor(0,power);
+    sleep(t);
+    ao();
+    return t;
+}
+
+float turnRight(float t, int power)
+{
+    motor(0,-20);
+    motor(1,power);
+    sleep(t);
+    ao();
+    return t;
+}
