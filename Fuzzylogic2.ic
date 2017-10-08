@@ -1,3 +1,4 @@
+//Aaron Gerber and Ben Lehman
 #define TIME 0.5
 #define LPOWER 35
 #define HPOWER 45
@@ -5,6 +6,14 @@
 
 int difference = 0;
 int power = 0;
+
+//Main first gets the difference of the right minus the left
+//It then passes the difference into fuzzyPower
+//Fuzzypower returns 1, -1, 2, -2, 0 and that value is put into power
+//There is a switch statement inside of main that checks what the value of power is
+//Negatives are turn left, positives right
+//If the value is 2 either way, the engine get more power
+//if power is 0 the robot goes forward
 void main()
 {        
     while(1)
@@ -37,10 +46,10 @@ void main()
     
 }
 
-//direction=1, change leftPower.
-//direction=0, change rightPower.
-//offmotor is the opposite of direction
-//difference = how much we are changing the power
+//Fuzzypower takes the difference and puts it through some if statements
+//Depending if the diff is negative or positive it returns a 1, -1, 2, -2
+//If the difference is larger, negative or positive, it returns a 2
+//If the difference is significant enough, it returns 0
 int fuzzyPower(int difference)
 {
     if(difference <0)
@@ -73,6 +82,7 @@ int fuzzyPower(int difference)
 }
 
 
+//Move forward
 float goForward(float t)
 {
     motor(0,30);
@@ -80,6 +90,8 @@ float goForward(float t)
     sleep(t);
     ao();
 }
+
+//Move backward
 float goBackward(float t)
 {
     motor(0,-30);
@@ -88,6 +100,7 @@ float goBackward(float t)
     ao();
 }
 
+//Turn left
 float turnLeft(float t, int power)
 {
     motor(1,10);
@@ -97,6 +110,7 @@ float turnLeft(float t, int power)
     return t;
 }
 
+//Turn right
 float turnRight(float t, int power)
 {
     motor(0,10);
