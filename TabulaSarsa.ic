@@ -1,0 +1,174 @@
+//Aaron Gerber & Ben Lehman        Group 4         
+#define TIME 0.25
+#define RIGHTFRONT digital(9)
+#define RIGHTBACK digital(10)
+#define LEFTFRONT digital(11)
+#define LEFTBACK digital(12)
+#define PRESSED 1
+#define BOOLEAN int
+#define TRUE 1
+#define FALSE 0
+#define R_VALUE 0.25
+#define MAX_R 1.0
+#define MIN_R -1.0
+#define FRONT 0
+#define LEFT 1
+#define RIGHT 2
+#define BACK 3
+
+float rewardsArray[4];
+int main()
+{
+    float rewardsArray[] = {0.0,0.0,0.0,0.0};
+    float direction = 0.0;
+    int index = 0;
+    while(1)
+      {
+        getPenalty();
+        index = findIndex();
+        switch(index)
+          {
+            case FRONT:
+              goForward(TIME);
+            break;
+            case LEFT:
+              turnLeft(TIME);
+            if(direction>0.0)
+              direction=0.0;
+            else
+              direction-=TIME;
+            if(direction<-2.0)
+              penalty(LEFT);
+            break;
+            case RIGHT:
+                turnRight(TIME);
+            if(direction<0.0)
+              direction=0.0;
+            else
+              direction+=TIME;
+            if(direction>2.0)
+              penalty(RIGHT);
+            break;
+            case BACK:
+              goBackward(TIME);
+            break;
+            default:
+              goForward(TIME);
+        }
+      }
+    
+}
+
+//Determine the new reward table based on the results of the previous round.
+void getPenalty()
+{
+    if(RIGHTFRONT==PRESSED)
+      {
+        reward(LEFT);
+        reward(BACK);
+        penalty(FRONT);
+        penalty(RIGHT);
+    }
+    if(RIGHTBACK==PRESSED)
+      {
+        reward(LEFT);
+        reward(FRONT);
+        penalty(RIGHT);
+        penalty(BACK);
+    }
+    if(LEFTFRONT==PRESSED)
+      {
+        reward(RIGHT);
+        reward(BACK);
+        penalty(FRONT);
+        penalty(LEFT);
+    }
+    if(LEFTBACK==PRESSED)
+      {
+        reward(RIGHT);
+        reward(FRONT);
+        penalty(LEFT);
+        penalty(BACK);
+    }
+}
+
+//Retrieve the highest index value and send it back
+int findIndex()
+{
+    int index = 0;
+    int i;
+    for(i = 0; i<4; i++)
+      {
+        if(rewardsArray[i]>rewardsArray[index])
+          index = i;
+    }
+    return index;
+}
+
+//Penalizes the index given, provided it doesn't go beyond the min reward value.
+BOOLEAN penalty(int index)
+{
+    if(rewardsArray[index]>0.0)
+      rewardsArray[index] = 0.0-R_VALUE;
+    else
+      {
+        rewardsArray[index] -= R_VALUE;
+        if(rewardsArray[index]<MIN_R)
+        {
+            rewardsArray[index] = MIN_R;
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+//Rewards the index given, provided it doesn't go beyond the max reward value.
+BOOLEAN reward(int index)
+{
+    rewardsArray[index]+=R_VALUE;
+    if(rewardsArray[index]>MAX_R)
+    { 
+        rewardsArray[index] = MAX_R;
+        return TRUE;
+    }
+    return FALSE;
+}
+
+//Moves the robot forward for t amount of seconds, then shuts the motors off.
+float goForward(float t)
+{
+    motor(0,40);
+    motor(1,40);
+    sleep(t);
+    ao();
+}
+
+//Moves the robot backward for t amount of seconds, then shuts the motors off.
+float goBackward(float t)
+{
+    motor(0,-30);
+    motor(1,-30);
+    sleep(t);
+    ao();
+}
+
+//Turns the robot left for t seconds, then shuts the motors off.
+float turnLeft(float t)
+{
+    motor(0,40);
+    motor(1,-25);
+    sleep(t);
+    ao();
+    return t;
+}
+
+//Turns the robot right for t seconds, then shuts the motors off.
+float turnRight(float t)
+{
+    motor(1,40);
+    motor(0,-25);
+    sleep(t);
+    ao();
+    return t;
+}
+
