@@ -1,0 +1,179 @@
+//Aaron Gerber and Ben Lehman
+#define TIME 0.5
+#define THRESHOLD 150
+#define HPOWER 35
+#define LPOWER 25
+#define RIGHTLIGHT analog(2);
+#define LEFTLIGHT analog(3);
+#define FRONTLIGHT analog(6);
+#define RIGHTIR analog(4);
+#define LEFTIR analog(5);
+
+int hasBlock = 0;
+int power = 0;
+int difference = 0;
+
+//Main first gets the difference of the right minus the left
+//It then passes the difference into fuzzyPower
+//Fuzzypower returns 1, -1, 2, -2, 0 and that value is put into power
+//There is a switch statement inside of main that checks what the value of power is
+//Negatives are turn left, positives right
+//If the value is 2 either way, the engine get more power
+//if power is 0 the robot goes forward
+void main()
+{        
+    while(1)
+      {
+        /*
+        int lightSide = 0;
+        if(intersection() = 1)
+          {
+            lightSide = lightFound();
+            if(lightSide = 0)
+              {
+                turnRight90();
+            }
+            if(lightSide = 1)
+              {
+                turnLeft90();
+            }
+            
+        }
+        */
+        difference = LEFTIR - RIGHTIR;
+        printf("%d\n",difference);
+        power = fuzzyPower(difference);
+        switch(power)
+          {
+            case 0:
+              goForward(TIME);
+            break;
+            case 1:
+              turnRight(TIME, LPOWER);
+            break;
+            case -1:
+              turnLeft(TIME, LPOWER);
+            break;
+            case 2:
+              turnRight(TIME, HPOWER);
+            break;
+            case -2:
+              turnLeft(TIME, HPOWER);
+            break;
+            default:
+              goBackward(TIME);
+            break;
+        }
+    }   
+    
+}
+
+//Fuzzypower takes the difference and puts it through some if statements
+//Depending if the diff is negative or positive it returns a 1, -1, 2, -2
+//If the difference is larger, negative or positive, it returns a 2
+//If the difference is significant enough, it returns 0
+int fuzzyPower(int difference)
+{
+    if(difference <0)
+      {
+        if((difference < -20) && (difference >= -50))
+          {
+            return -1;
+        }
+        if((difference < -50))
+          {
+            return -2;
+        }
+    }
+    else if(difference >0)
+      {
+        if((difference > 20) && (difference <= 50))
+          {
+            return 1;
+        }
+        if((difference > 50))
+          {
+            return 2;
+        }
+        
+    }
+    else 
+    {
+        return 0;
+    }
+}
+
+
+//Move forward
+float goForward(float t)
+{
+    motor(0,30);
+    motor(1,30);
+    sleep(t);
+    ao();
+}
+
+//Move backward
+float goBackward(float t)
+{
+    motor(0,-30);
+    motor(1,-30);
+    sleep(t);
+    ao();
+}
+
+//Turn left
+float turnLeft(float t, int power)
+{
+    motor(1,10);
+    motor(0,power);
+    sleep(t);
+    ao();
+    return t;
+}
+
+//Turn right
+float turnRight(float t, int power)
+{
+    motor(0,10);
+    motor(1,power);
+    sleep(t);
+    ao();
+    return t;
+}
+
+void dropGate()
+{
+    
+}
+
+void liftGate()
+{
+    
+}
+/*
+int intersection()
+{
+    if((RIGHTIR > THRESHOLD)&&(LEFTIR > THRESHOLD))
+      {
+        return 1;
+    }
+    return 0;
+}
+/*
+int lightFound()
+{
+    if(RIGHTLIGHT < THRESHOLD)
+      {
+        return 0;
+    }
+    else if(LEFTLIGHT < THRESHOLD)
+      {
+        return 1;
+    }
+    return 69;
+    
+}
+*/
+
+
